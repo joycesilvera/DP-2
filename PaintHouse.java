@@ -5,37 +5,73 @@
 
 // Your code here along with comments explaining your approach
 public class PaintHouse {
+
+    /*
+     * [[17,2,17],
+     * [2,17,2],
+     * [14,3,19]]
+     * 
+     * 
+     */
+
     public int minCost(int[][] costs) {
-        if (costs == null || costs.length == 0)
-            return 0;
-        int r = costs.length;
-        int c = costs[0].length;
-        int[][] dp = new int[r][c];
 
-        for (int i = 0; i < costs[0].length; i++) {
-            dp[0][i] = costs[0][i];
+        int case1 = helper(costs, 0, 0, 0);
+
+        int case2 = helper(costs, 0, 0, 1);
+
+        int case3 = helper(costs, 0, 0, 2);
+
+        return Math.min(case1, Math.min(case2, case3));
+
+    }
+
+    private int helper(int[][] costs, int min, int row, int lastColor) {
+
+        // base
+
+        if (row == costs.length)
+            return min;
+
+        // logic
+
+        int case1 = Integer.MAX_VALUE;
+        int case2 = Integer.MAX_VALUE;
+        int case3 = Integer.MAX_VALUE;
+
+        if (lastColor == 0) {
+
+            case1 = Math.min(
+                    helper(costs, min + costs[row][1], row + 1, 1), // blue
+                    helper(costs, min + costs[row][2], row + 1, 2)// green
+            );
+
         }
 
-        /*
-         * [[17,2,17],
-         * [2,17,2],
-         * [14,3,19]]
-         * 
-         * 
-         */
+        if (lastColor == 1) {
 
-        for (int i = 1; i < r; i++) { // houses
-            dp[i][0] += costs[i][0] + Math.min(dp[i - 1][1], dp[i - 1][2]);
-            dp[i][1] += costs[i][1] + Math.min(dp[i - 1][0], dp[i - 1][2]);
-            dp[i][2] += costs[i][2] + Math.min(dp[i - 1][0], dp[i - 1][1]);
+            case2 = Math.min(
+                    helper(costs, min + costs[row][0], row + 1, 0), // blue
+                    helper(costs, min + costs[row][2], row + 1, 2)// green
+            );
+
         }
 
-        return Math.min(dp[r - 1][0], Math.min(dp[r - 1][1], dp[r - 1][2]));
+        if (lastColor == 2) {
+
+            case3 = Math.min(
+                    helper(costs, min + costs[row][0], row + 1, 0), // blue
+                    helper(costs, min + costs[row][1], row + 1, 1)// green
+            );
+
+        }
+
+        return Math.min(case1, Math.min(case2, case3));
     }
 
     public static void main(String[] args) {
         PaintHouse ph = new PaintHouse();
         int[][] costs = { { 17, 2, 17 }, { 2, 17, 2 }, { 14, 3, 19 } };
-        System.out.println(ph.minCost(costs)); // Output: 10
+        System.out.println(ph.minCost(costs)); // Output: 7
     }
 }
